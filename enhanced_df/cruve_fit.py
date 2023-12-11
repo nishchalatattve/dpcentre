@@ -133,9 +133,12 @@ class CurveFitMixin:
         # combine parameter value with name
         param_name_final = r'\hspace{12pt}'.join([fr'\( {name} = {value} \) ' for name, value in
                                                   zip(param_name, param_values)])
-
-        # add some space between model name and parameter value
-        text = '\n \n'.join([model_name, param_name_final])
+        if self.reduced_chi_squared is not None:
+            # add some space between model name and parameter value
+            text = '\n \n'.join([model_name, param_name_final, r'\( \chi^2_{reduced} = \) '
+                                                               fr'{self.reduced_chi_squared: .3f}'])
+        else:
+            text = '\n \n'.join([model_name, param_name_final])
 
         return text
 
