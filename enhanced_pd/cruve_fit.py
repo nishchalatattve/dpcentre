@@ -1,19 +1,16 @@
 r"""
-Haoze Pang 23
+Author: Haoze Pang 23
+
+Description
+------------
 This module provide a mixin class for curve fitting. It is designed to work with pandas accessor
-'b'.
+'stat'.
 """
 import inspect
 from functools import cache, cached_property
-
 import numpy as np
 from scipy.optimize import curve_fit
 from icecream import ic
-
-
-def get_param_name(doctring):
-    model_name, param_name = doctring.split('Params:')
-    return model_name.strip(), param_name.strip()
 
 
 def mh(model, x, y_actual, sigma=1):
@@ -149,8 +146,7 @@ class CurveFitMixin:
         If not provided, Metropolis algorithm will be used to provide and initial estimate
         """
 
-        return mh(self.model, self.x, self.y,
-                  self.err_y)
+        return mh(self.model, self.x, self.y, self.err_y)
 
     @property
     @cache

@@ -1,6 +1,13 @@
 r"""
-Haoze Pang 23
+Author: Haoze Pang 23
+
+Description
+-----------
 This module provide a pandas accessor,'b'  with additional features.
+
+Classes
+-------
+EnhancedData: pd's dataframe accessor('stat')
 """
 import numpy as np
 import pandas as pd
@@ -9,9 +16,9 @@ from .cruve_fit import CurveFitMixin
 from icecream import ic
 
 
-# b for Basic: a pandas accessor providing additional features
-@pd.api.extensions.register_dataframe_accessor('b')
-class BasicData(CurveFitMixin, PlotMixin):
+# stat for statistic mode: a pandas accessor providing additional features about statistics
+@pd.api.extensions.register_dataframe_accessor('stat')
+class EnhancedData(CurveFitMixin, PlotMixin):
     """A customised df providing additional plotting and curve fitting features
 
     It uses plotting capabilities provided by PlotMixin.
@@ -21,20 +28,26 @@ class BasicData(CurveFitMixin, PlotMixin):
     ----------
     name: str
         Name of this table
-    x:
-        The first column of the df
-    y:
-        The second column of the df
-    err_y:
-        The third column of the df (error on y)
+    model:
+        The function that predicts y given x.
+
+    x, y, and err_y are just for internal references
+
+    Methods
+    -------
+    inspect_err_y
+    filter_outliers
     """
 
     def __init__(self, pandas_df):
         """Initiates the class"""
+
         self._df = pandas_df
+
         self.model = None
         self.name = 'My Data'
-        self._max_col = 3  # maximum number of column this df currently work with
+
+        self._max_col = 3  # maximum number of column this extension currently work with
 
         self._validate()
 
@@ -45,25 +58,48 @@ class BasicData(CurveFitMixin, PlotMixin):
                             f'The column of data should be less then {self._max_col}. '
                             f'Your data has {self._df.shape[1]} columns.')
 
+    def inspect_err_y(self):
+        """Inspect if the uncertainty on y is positive.
+
+        If not, crop and retain positive uncertainties
+
+        Returns
+        -------
+         a new data frame without outliers with positive uncertainty values
+
+        """
+        if self._df.shape[1] == 3:
+            # ensure err_y is positive
+            return self._df[self._df.iloc[:, 2] > 0]
+        else:
+            raise TypeError('This error on y is not well defined. '
+                            'Please check the number of column in your data.')
+
+    def filter_outliers(self):
+        """Filter outliers outside 1.25 standard deviation away from mean
+
+        Returns
+        -------
+        a new data frame without outliers
+        """
+
+        # getting mean and standard deviation
+        mean = self.y.mean()
+        standard_deviation = self.y.std()
+
+        # filter
+        mask = np.abs(self.y - mean) < 1.25 * standard_deviation
+        return self._df[mask]
+
     @property
     def x(self):
         """The first column of the data"""
         return self._df.iloc[:, 0]
 
-    @x.setter
-    def x(self, value):
-        """Setter of x"""
-        self._df.iloc[:, 0] = value
-
     @property
     def y(self):
         """The second column of the data"""
         return self._df.iloc[:, 1]
-
-    @y.setter
-    def y(self, value):
-        """Setter of y"""
-        self._df.iloc[:, 1] = value
 
     @property
     def err_y(self):
@@ -71,17 +107,7 @@ class BasicData(CurveFitMixin, PlotMixin):
 
         # check shape
         if self._df.shape[1] == 3:
-
-            # ensure err_y is positive
-            self._df = self._df[self._df.iloc[:, 2] > 0]
-
-            # returns the third column of data
             return self._df.iloc[:, 2]
         # if this is a two column data, ensure err_y is always None
         else:
             return None
-
-    @err_y.setter
-    def err_y(self, value):
-        """Setter of err_y"""
-        self._df.iloc[:, 2] = value

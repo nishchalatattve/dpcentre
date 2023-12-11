@@ -1,5 +1,16 @@
+"""
+
+Functions
+---------
+plot_init
+save_plot
+
+Classes
+-------
+PlotMixin
+
+"""
 import matplotlib.pyplot as plt
-from dpcentre.file_operation import move_file
 
 
 def plot_init():
@@ -36,10 +47,10 @@ def save_plot(save_as: str):
     print('saving plot...')
     plt.tight_layout(pad=4.0)
     plt.savefig(f'{save_as}', dpi=1000)
-    move_file(f'{save_as}.png', 'plots')
     print('Plot saved!\n')
 
 
+# noinspection PyUnresolvedReferences
 class PlotMixin:
     r"""A mixin class providing plotting ability for 'b'
 
