@@ -13,41 +13,30 @@ PlotMixin
 import matplotlib.pyplot as plt
 
 
-def plot_init():
-    """Initialise plot setting
+def custom_plot(func):
+    def wrapper(*args, **kwargs):
+        # initialise
+        print("Plotting...")
 
-    Uses soloarise theme.
-    Enables LaTeX rendering with beautiful fonts.
+        # use solarize-light style
+        plt.style.use('Solarize_Light2')
 
-    """
-    print("Plotting...")
+        # enable LaTeX rendering and apply costume font
+        plt.rcParams['text.usetex'] = True
+        plt.rcParams['text.latex.preamble'] = (r'\usepackage{mathpazo}'
+                                               r'\usepackage{euler}'
+                                               r'\usepackage{amsmath}')
+        plt.rcParams['font.family'] = 'serif'
 
-    # use solarize-light style
-    plt.style.use('Solarize_Light2')
+        # custom plot process
+        func(*args, **kwargs)
 
-    # enable LaTeX rendering and apply costume font
-    plt.rcParams['text.usetex'] = True
-    plt.rcParams['text.latex.preamble'] = (r'\usepackage{mathpazo}'
-                                           r'\usepackage{euler}'
-                                           r'\usepackage{amsmath}')
-    plt.rcParams['font.family'] = 'serif'
-
-
-def save_plot(save_as: str):
-    """Save plots as plots/save_as.png
-
-    Ensures a tight layout with some paddings
-    Ensures a resolution of 1000 dpi
-
-    Parameters
-    ----------
-    save_as: str
-        The name of the file you wish to save your plot as
-    """
-    print('saving plot...')
-    plt.tight_layout(pad=4.0)
-    plt.savefig(f'{save_as}', dpi=1000)
-    print('Plot saved!\n')
+        # save plot
+        save_as = args[0]
+        print(f'saving plot {save_as}...')
+        plt.tight_layout(pad=4.0)
+        plt.savefig(f'{save_as}', dpi=1000)
+        print(f'Plot {save_as} saved!\n')
 
 
 # noinspection PyUnresolvedReferences
@@ -79,6 +68,7 @@ class PlotMixin:
                         alpha=0.8,
                         label='data')
 
+    @custom_plot
     def plot(self, save_as: str, caption=''):
         """Create a plot
 
@@ -89,9 +79,6 @@ class PlotMixin:
         save_as: str
             The file name you wish to save your plot as
         """
-
-        # initialise the process
-        plot_init()
 
         # draw data on graph
 
@@ -131,6 +118,3 @@ class PlotMixin:
             ax1.set_title(f'{self.name}-fitted curve')
         else:
             ax1.set_title(f'{self.name}')
-
-        # save plot
-        save_plot(save_as)

@@ -1,2 +1,2 @@
 from .main import *
-from .IO import *
+from .io import *

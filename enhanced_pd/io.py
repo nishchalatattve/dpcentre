@@ -1,4 +1,4 @@
-"""
+"""io
 Functions
 ---------
 get_data_from
@@ -18,7 +18,6 @@ def get_data_from(file_name: str, name_of_data_folder='data'):
     name_of_data_folder: str
         The name of the folder containing data files. Default to raw_data
 
-
     Returns
     -------
     data: pd.DataFrame
@@ -29,11 +28,10 @@ def get_data_from(file_name: str, name_of_data_folder='data'):
         data = pd.read_csv(f'{name_of_data_folder}/{file_name}')
     except FileNotFoundError:
         try:
-            data = pd.read_csv(f'{name_of_data_folder}/{file_name}')
+            data = pd.read_csv(f'{file_name}')
         except FileNotFoundError:
             print(f'File {file_name} not found!')
 
     numeric_df = pd.DataFrame(data).apply(pd.to_numeric, errors='coerce').dropna()
-    sorted_df = numeric_df.sort_values(numeric_df.columns[0])
 
-    return sorted_df
+    return numeric_df

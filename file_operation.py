@@ -1,4 +1,4 @@
-"""
+"""File operations.
 Functions
 ---------
 move_file
@@ -35,16 +35,16 @@ def move_file(file_name: str, folder_name: str):
         # move the file
         shutil.move(file_name, folder_name)
     except shutil.Error:
-        """This error typically occurs when there is already a file with the same name in the 
-            destination directory. If this is the case, we fill delete the original file"""
+        # This error typically occurs when there is already a file with the same name in the
+        # destination directory. If this is the case, we fill delete the original file
 
         print(f'{file_name} already exists in {file_name}, now overriding it!')
         os.remove(destination_file)
         # move the file
         shutil.move(file_name, folder_name)
     except FileNotFoundError:
-        print(f"Please put the raw data file in the same directory as this python script. "
-              f"If you think you have provided the file, please check if the file name is correct.")
+        print("Please put the raw data file in the same directory as this python script. "
+              "If you think you have provided the file, please check if the file name is correct.")
 
 
 def clean():

@@ -5,12 +5,19 @@ Description
 ------------
 This module provide a mixin class for curve fitting. It is designed to work with pandas accessor
 'stat'.
+
+Function
+---------
+mh
+
+Class
+-----
+CurveFitMixin
 """
 import inspect
 from functools import cache, cached_property
 import numpy as np
 from scipy.optimize import curve_fit
-from icecream import ic
 
 
 def mh(model, x, y_actual, sigma=1):
@@ -92,11 +99,14 @@ def mh(model, x, y_actual, sigma=1):
     mean_params = np.mean(accepted_samples, axis=0)
 
     print('Finished guessing')
+    print(f'best-fit parameters: {mean_params}')
 
     # return the best-fit params
     return mean_params
 
 
+# pylint: disable=R1710
+# pylint: disable=W1518
 # noinspection PyUnresolvedReferences
 class CurveFitMixin:
     """A mixin class providing curve fitting capabilities
@@ -123,9 +133,8 @@ class CurveFitMixin:
         param_name = [s.strip() for s in param_name]
 
         # combine parameter value with error
-        param_values = [fr'{value: .3f} \pm {error: .2f} ' for value, error in zip(
-            self.best_fit_params,
-            self.err_params)]
+        param_values = [fr'{value: .2f} \pm {error: .2f} ' for value, error
+                        in zip(self.best_fit_params, self.err_params)]
 
         # combine parameter value with name
         param_name_final = r'\hspace{12pt}'.join([fr'\( {name} = {value} \) ' for name, value in
@@ -146,7 +155,7 @@ class CurveFitMixin:
         If not provided, Metropolis algorithm will be used to provide and initial estimate
         """
 
-        return mh(self.model, self.x, self.y, self.err_y)
+        return mh(self.model, self.x, self.y)
 
     @property
     @cache
@@ -182,7 +191,6 @@ class CurveFitMixin:
 
         # check if this is a chi-squared regression
         if self.err_y is not None:
-
             # calculate degrees of freedom
             number_of_data = self._df.shape[0]
             number_of_parameters = len(self.best_fit_params)
@@ -194,10 +202,6 @@ class CurveFitMixin:
             # calculate reduced chi-squared
             return chi_squared / degrees_of_freedom
 
-        # return None if this is not a chi-squared regression
-        else:
-            return None
-
     @property
     @cache
     def y_predict(self):
@@ -205,8 +209,4 @@ class CurveFitMixin:
 
         # check if curve fitting is required
         if self.model is not None:
-
             return self.model(self.x, *self.best_fit_params)
-
-        else:
-            return None

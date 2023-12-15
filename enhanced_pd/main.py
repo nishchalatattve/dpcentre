@@ -11,11 +11,13 @@ EnhancedData: pd's dataframe accessor('stat')
 """
 import numpy as np
 import pandas as pd
+from scipy.signal import find_peaks
+from functools import cache, cached_property
 from .plotter import PlotMixin
-from .cruve_fit import CurveFitMixin
-from icecream import ic
+from .curve_fit import CurveFitMixin
 
 
+# pylint: disable=R1710
 # stat for statistic mode: a pandas accessor providing additional features about statistics
 @pd.api.extensions.register_dataframe_accessor('stat')
 class EnhancedData(CurveFitMixin, PlotMixin):
@@ -71,9 +73,8 @@ class EnhancedData(CurveFitMixin, PlotMixin):
         if self._df.shape[1] == 3:
             # ensure err_y is positive
             return self._df[self._df.iloc[:, 2] > 0]
-        else:
-            raise TypeError('This error on y is not well defined. '
-                            'Please check the number of column in your data.')
+        raise TypeError('This error on y is not well defined. '
+                        'Please check the number of column in your data.')
 
     def filter_outliers(self):
         """Filter outliers outside 1.25 standard deviation away from mean
@@ -92,6 +93,11 @@ class EnhancedData(CurveFitMixin, PlotMixin):
         return self._df[mask]
 
     @property
+    @cache
+    def troughs(self):
+        return find_peaks(-self.y, distance=1000000)[0]
+
+    @property
     def x(self):
         """The first column of the data"""
         return self._df.iloc[:, 0]
@@ -108,6 +114,3 @@ class EnhancedData(CurveFitMixin, PlotMixin):
         # check shape
         if self._df.shape[1] == 3:
             return self._df.iloc[:, 2]
-        # if this is a two column data, ensure err_y is always None
-        else:
-            return None
