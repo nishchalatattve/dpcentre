@@ -1,27 +1,41 @@
-"""io
-Functions
----------
-get_data_from
+"""
+This is my generic tool box.
+Haoze 24
+
+Dependencies
+------------
+    - pandas
+
+    - project src
+
+Contents
+--------
 """
 import pandas as pd
+from .projects_src.io import *
 
 
 def get_data_from(file_name: str, name_of_data_folder='data'):
-    """A function to read csv file and place it in a raw_data folder if the file is not already
-    in it
+    """
+    Get data from a csv file.
+
+    Description
+    -----------
+        - read data from a csv file
+        - convert all data to numeric
 
     Parameters
     ----------
     file_name: str
-        The name of the file you wish to read.
+        The name of the file to generate df from.
 
     name_of_data_folder: str
-        The name of the folder containing data files. Default to raw_data
+        The name of the folder containing file_name. Default to data
 
     Returns
     -------
-    data: pd.DataFrame
-        A data frame created from the file you provided
+    numeric_df: pd.DataFrame
+        A dataframe in which data is all numeric
     """
     data = None
     try:
