@@ -6,7 +6,7 @@ Dependencies
 ------------
     - pandas
 
-    - project src
+    - project_src
 
 Contents
 --------

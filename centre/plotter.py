@@ -59,9 +59,8 @@ def custom_plot(func):
         # - save plot
         indicate(f'saving plot "{plot_name}.png"...')
         plt.tight_layout(pad=2.0)
-        plt.savefig(f'{plot_name}', dpi=800)
+        plt.savefig(f'{plot_name}', dpi=DPI)
         indicate('Plot saved!\n')
-
         return result
 
     return wrapper
