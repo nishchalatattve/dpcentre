@@ -52,15 +52,16 @@ def custom_plot(func):
         plt.rcParams['font.family'] = 'serif'
 
         # - function call
-        plot_name = args[1]
-        indicate(f'Plotting {plot_name}...')
+        # plot_name = args[1]
+        # indicate(f'Plotting {plot_name}...')
         result = func(*args, **kwargs)
 
         # - save plot
-        indicate(f'saving plot "{plot_name}.png"...')
+        # indicate(f'saving plot "{plot_name}.png"...')
         plt.tight_layout(pad=2.0)
-        plt.savefig(f'{plot_name}', dpi=DPI)
-        indicate('Plot saved!\n')
+        plt.show()
+        # plt.savefig(f'{plot_name}', dpi=800)
+        # indicate('Plot saved!\n')
         return result
 
     return wrapper
